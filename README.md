@@ -43,10 +43,22 @@ Scripts/functions written by our team:
 
 (Note: These Python files are located in the src/ directory )
 
-evaluate.py: Implements the Llama-3 execution-aware judge and grading loops for all experiment runs. (110 lines)
+Refinement.py: An iterative refinement loop for SQL generation (80 lines)
 
-Helpers.py: Contains utility functions for threaded SQLite execution, SQL regex extraction, and schema retrieval. (70 lines)
+analysis.py: Analysis and plot the graph of the four methods (180 lines)
 
-Methods.py: Implements prompt templates and generation logic for Baseline, Few-Shot, CoT, and Agentic Refinement. (100 lines)
+baseline.py: Baseline prompt to the SQLcoder (13 lines)
 
-Models.py: Handles initialization and 4-bit NF4 quantization loading for both SQLCoder and Llama-3. (50 lines)
+cot.py: COT prompt to the SQLcoder (20 lines)
+
+few_shot.py: Few-shots prompt to the SQLcoder (37 lines)
+
+grade_results.py: Add the points after finishing grading the SQL query (90 lines)
+
+grading.py: Use llama as a ai judge to grade the SQL query (200 lines)
+
+helpers.py: Helper functions that can reuse to save time (90 lines)
+
+models.py: Functions to load the models (50 lines)
+
+run_experiments.py: Function to let the SQLcoder to run all four methods (140 lines)
