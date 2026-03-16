@@ -3,7 +3,7 @@ import json
 import torch
 import pandas as pd
 from tqdm.auto import tqdm
-from helpers import execute_query, get_db_path
+from Helpers import execute_query, get_db_path
 
 def execution_aware_llama_judge(question, gold_sql, pred_sql, db_path):
     if not pred_sql or str(pred_sql).strip() == "":
@@ -45,7 +45,7 @@ Student SQL: {pred_sql}
 Student Execution Status: {"SUCCESS" if pred_success else "FAILED"}
 Student Result (First 5 rows or Error MSG): {pred_data_str}"""
 
-    from models import judge_model, judge_tokenizer
+    from Models import judge_model, judge_tokenizer
 
     messages = [
         {"role": "system", "content": system_prompt},

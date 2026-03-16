@@ -1,5 +1,5 @@
-from helpers import extract_sql_from_output, execute_query
-from models import run_inference
+from Helpers import extract_sql_from_output, execute_query
+from Models import run_inference
 
 def generate_sql_baseline(question, schema):
     prompt = f"""### Task
