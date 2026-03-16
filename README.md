@@ -1,11 +1,15 @@
 # cs175-Mars-text2sql
 
 Project Name: Mars
+
 Team Members: Yonghao Liang, Wenshuo Wang, Jacky Zhang
 
 Mention the external libraries your team used
+
 Libraries used:
+
 transformers (https://huggingface.co/docs/transformers)
+
 bitsandbytes (https://github.com/TimDettmers/bitsandbytes)
 accelerate (https://huggingface.co/docs/accelerate)
 datasets (https://huggingface.co/docs/datasets)
