@@ -1,5 +1,5 @@
 from helpers import extract_sql_from_output, execute_query
-from models  import run_inference
+from models import run_inference
 
 def generate_sql_baseline(question, schema):
     prompt = f"""### Task
@@ -74,7 +74,6 @@ SQL:
     return extract_sql_from_output(run_inference(prompt, max_tokens=400))
 
 def ai_judge_diagnostic_parser(question, schema, failed_sql, execution_status):
-    """Ask the SQLCoder model to diagnose and suggest a fix for a SQL query."""
     prompt = f"""You are an expert SQL Debugger and Logic Judge.
 A model tried to answer this question: {question}
 Using this schema: {schema}
@@ -87,24 +86,21 @@ Otherwise, provide a clear, one-sentence instruction for the model to fix the SQ
 Fix Instruction:"""
     return run_inference(prompt, max_tokens=150).strip()
 
-
 def generate_sql_refinement(question, schema, db_path, max_attempts=3):
-    """Generate SQL with up to 3 self-refinement attempts using the AI judge."""
     attempts = []
     current_sql = generate_sql_fewshot(question, schema)
     attempts.append(current_sql)
 
     for attempt in range(max_attempts):
         success, exec_result = execute_query(current_sql, db_path)
-        judge_input_status = (
-            "Execution Succeeded. Logic check required."
-            if success else
-            f"Execution Failed: {exec_result}"
-        )
+
+        if success:
+            judge_input_status = "Execution Succeeded. Logic check required."
+        else:
+            judge_input_status = f"Execution Failed: {exec_result}"
 
         advice = ai_judge_diagnostic_parser(question, schema, current_sql, judge_input_status)
 
-        # Early stop if judge is satisfied
         if success and ("LOOKS GOOD" in advice.upper() or "PERFECT" in advice.upper()):
             break
 
@@ -125,7 +121,6 @@ Corrected SQL:"""
         current_sql = extract_sql_from_output(run_inference(refine_prompt))
         attempts.append(current_sql)
 
-    # Pad to exactly 3 attempts if finished early
     while len(attempts) < 3:
         attempts.append(attempts[-1])
 

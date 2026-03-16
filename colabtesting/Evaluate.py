@@ -3,12 +3,9 @@ import json
 import torch
 import pandas as pd
 from tqdm.auto import tqdm
-
 from helpers import execute_query, get_db_path
-from models  import judge_model, judge_tokenizer
 
 def execution_aware_llama_judge(question, gold_sql, pred_sql, db_path):
-    """Grade a predicted SQL query 0-10 against the gold standard."""
     if not pred_sql or str(pred_sql).strip() == "":
         return 0, "No SQL generated."
 
@@ -18,7 +15,6 @@ def execution_aware_llama_judge(question, gold_sql, pred_sql, db_path):
     gold_data_str = str(gold_res.head(5).to_dict(orient='records')) if gold_success else f"Gold Error: {gold_res}"
     pred_data_str = str(pred_res.head(5).to_dict(orient='records')) if pred_success else f"SQLite Error: {pred_res}"
 
-    # Fast path: exact match on execution results (column-name-agnostic)
     if gold_success and pred_success:
         try:
             gold_vals = gold_res.reset_index(drop=True)
@@ -49,13 +45,12 @@ Student SQL: {pred_sql}
 Student Execution Status: {"SUCCESS" if pred_success else "FAILED"}
 Student Result (First 5 rows or Error MSG): {pred_data_str}"""
 
+    from models import judge_model, judge_tokenizer
+
     messages = [
         {"role": "system", "content": system_prompt},
         {"role": "user",   "content": user_prompt}
     ]
-
-    # Re-import here so we always use the current global (loaded at runtime)
-    from models import judge_model, judge_tokenizer
 
     inputs = judge_tokenizer.apply_chat_template(
         messages, add_generation_prompt=True, return_tensors="pt", return_dict=True
@@ -70,9 +65,7 @@ Student Result (First 5 rows or Error MSG): {pred_data_str}"""
             pad_token_id=judge_tokenizer.eos_token_id
         )
 
-    response = judge_tokenizer.decode(
-        outputs[0][inputs['input_ids'].shape[1]:], skip_special_tokens=True
-    )
+    response = judge_tokenizer.decode(outputs[0][inputs['input_ids'].shape[1]:], skip_special_tokens=True)
 
     try:
         match = re.search(r'\{.*?\}', response.replace('\n', ''), re.DOTALL)
@@ -140,5 +133,4 @@ def grade_multi_attempts(input_csv, output_csv):
         df[key] = values
 
     df.to_csv(output_csv, index=False)
-
     return df['Score_1'].mean(), df['Score_2'].mean(), df['Score_3'].mean()

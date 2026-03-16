@@ -10,7 +10,6 @@ DB_MAP = {
     "tvshow":         "tvshow",
 }
 
-# Set by setup.py at runtime — do not hardcode here
 DATA_ROOT = None
 
 def set_data_root(path):
@@ -18,16 +17,12 @@ def set_data_root(path):
     DATA_ROOT = path
 
 def get_db_path(db_id):
-    """Return the full .sqlite path for a given Spider db_id."""
     if DATA_ROOT is None:
-        raise RuntimeError("DATA_ROOT not set. Call helpers.set_data_root(path) first.")
+        raise RuntimeError("DATA_ROOT not set. Call set_data_root(path) first.")
     folder = DB_MAP.get(db_id, db_id)
     return os.path.join(DATA_ROOT, folder, f"{folder}.sqlite")
 
-# SQL EXTRACTION
-
 def extract_sql_from_output(text):
-    """Pull the SQL query out of a raw model output string."""
     if not isinstance(text, str):
         return ""
     if "[SQL]" in text:
@@ -40,11 +35,8 @@ def extract_sql_from_output(text):
         return select_match.group(1).strip()
     return text.strip()
 
-# QUERY EXECUTION
-
 def execute_query(sql, db_path, timeout_seconds=5):
-    """Execute a SQL query with a timeout to prevent infinite cross-join hangs."""
-    result = {"success": False, "data": "Timeout: Query took too long (likely a massive cross-join)."}
+    result = {"success": False, "data": "Timeout: Query took too long to execute (likely a massive cross-join)."}
 
     def run_target():
         try:
@@ -68,10 +60,7 @@ def execute_query(sql, db_path, timeout_seconds=5):
         return False, result["data"]
     return result["success"], result["data"]
 
-# SCHEMA READING
-
 def get_schema_from_sqlite(db_path):
-    """Read CREATE TABLE statements from a SQLite database."""
     try:
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
