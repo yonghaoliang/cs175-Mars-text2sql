@@ -6,7 +6,8 @@ Team Members: Yonghao Liang, Wenshuo Wang, Jacky Zhang
 
 Mention the external libraries your team used
 
-Libraries used:
+
+# Libraries used:
 
 transformers (https://huggingface.co/docs/transformers)
 
@@ -24,7 +25,8 @@ torch (https://pytorch.org)
 
 tqdm (https://tqdm.github.io)
 
-List the publicly available code(s) you used in your project.
+
+# List the publicly available code(s) you used in your project.
 
 Publicly available codes used:
 
@@ -34,7 +36,8 @@ Meta-Llama-3-8B-Instruct (https://huggingface.co/NousResearch/Meta-Llama-3-8B-In
 
 Spider Dataset (https://huggingface.co/datasets/spider). Used unmodified for validation questions and SQLite database testing.
 
-List the code(s) written entirely by your team.
+
+# List the code(s) written entirely by your team.
 
 Scripts/functions written by our team:
 
